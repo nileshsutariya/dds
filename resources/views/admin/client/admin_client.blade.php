@@ -42,7 +42,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label>Area</label>
-                                    <select class="form-control" name="area">
+                                    <select class="form-control select2" name="area" id="area">
                                         <option disabled selected>Select Area</option>
                                         @foreach ($areas as $area)
                                             <option value="{{ $area->area_name }}"
@@ -104,10 +104,25 @@
     </div>
 </div>
 
+<script>
+    $('#area').select2({
+       placeholder: "Select area",
+       allowClear: false
+       width: '100%'
+       theme: "bootstrap4"
+   });
+</script>
+
 @include('layouts.footer')
 
 <style>
     #status {
         transform: scale(1.5);
+    }
+
+    .select2-container .select2-selection--single {
+        height: 38px !important;
+        font-size: 16px;
+        border: 2px solid #ebe8e8 !important;
     }
 </style>

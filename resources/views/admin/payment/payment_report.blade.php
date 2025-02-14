@@ -19,7 +19,7 @@
 
                 <div class="form-group col-md-3 col-sm-6">
                     <label>Clients</label>
-                    <select class="form-control form-control-md" name="client_id" style="width: 100%;" id="clients">
+                    <select class="form-control form-control-md select2" name="client_id" style="width: 100%;" id="clients">
                         <option disabled selected>Select Client</option>
                         @foreach ($clients as $client)
                             <option value="{{ $client->id }}" {{ old('client_id') == $client->id ? 'selected' : '' }}>
@@ -28,7 +28,7 @@
                         @endforeach
                     </select>
                 </div>
-
+                
                 <div class="form-group col-md-3 col-sm-6 d-flex" style="margin-top: 31px;">
                     <button type="submit" class="btn btn-primary btn-md w-auto w-sm-100">Submit</button>
                 </div>
@@ -165,10 +165,25 @@
     });
 </script>
 
+<script>
+    $('#clients').select2({
+       placeholder: "Select Client",
+       allowClear: false
+       width: '100%'
+       theme: "bootstrap4"
+   });
+</script>
+
 @include('layouts.footer')
 
 <style>
     #balance {
         background-color: transparent;
+    }
+
+    .select2-container .select2-selection--single {
+        height: 38px !important;
+        font-size: 16px;
+        border: 2px solid #ece9e9 !important;
     }
 </style>

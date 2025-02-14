@@ -132,7 +132,6 @@ class AdminController extends Controller
         return view('admin.client.admin_client_table', compact('admin_client'));
     }
 
-
     public function edit(string $id)
     {
         $admin = User::findOrFail($id);

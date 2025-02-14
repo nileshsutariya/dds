@@ -20,13 +20,11 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label style="font-size: 15px">Select Client</label>
-                                    <select class="form-control" name="active_users" id="clientSelect">
+                                    <select class="form-control select2" name="active_users" id="clientSelect">
                                         <option disabled selected>Select Client</option>
                                         @foreach ($clients as $client)
                                             @if ($client->status == 1)
-                                                <option value="{{ $client->id }}">
-                                                    {{ $client->name }}
-                                                </option>
+                                                <option value="{{ $client->id }}">{{ $client->name }}</option>
                                             @endif
                                         @endforeach
                                     </select>
@@ -315,12 +313,29 @@
 
         $('#clientSelect').trigger('change');
     });
+   
+</script>
+
+<script>
+     $('#clientSelect').select2({
+        placeholder: "Select Client",
+        allowClear: false
+        width: '100%'
+        theme: "bootstrap4"
+    });
 </script>
 
 <style>
     .responsive-heading {
         font-size: clamp(24px, 5vw, 40px);
     }
+
+    .select2-container .select2-selection--single {
+        height: 40px !important;
+        font-size: 16px;
+        border: 2px solid #d6d6d6 !important;
+    }
+
 </style>
 
 @include('layouts.footer')
