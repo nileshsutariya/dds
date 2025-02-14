@@ -387,7 +387,7 @@ class AdminController extends Controller
             'total_amount' => $totalAmount,
             'pending_amount' => max($pendingAmount, 0),
             'advance_payment' => $advancePayment
-        ]);
+        ]); 
     }
 
     public function expense()

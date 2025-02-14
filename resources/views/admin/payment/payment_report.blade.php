@@ -83,7 +83,7 @@
                                                         <td>{{ $payment->client?->name ?? '-' }}</td>
                                                         <td>{{ $payment->date }}</td>
                                                         <td
-                                                            style="color: {{ $payment->type == 'c' ? 'red' : 'green' }};">
+                                                            style="color: {{ $payment->type == 'c' ? 'green' : 'red' }};">
                                                             {{ $payment->amount }}
                                                         </td>
                                                     </tr>
