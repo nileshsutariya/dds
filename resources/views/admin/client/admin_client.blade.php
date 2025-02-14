@@ -107,9 +107,9 @@
 <script>
     $('#area').select2({
        placeholder: "Select area",
-       allowClear: false
-       width: '100%'
-       theme: "bootstrap4"
+       allowClear: false,
+       width: '100%',
+       theme: "bootstrap4",
    });
 </script>
 

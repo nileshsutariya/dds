@@ -8,6 +8,9 @@
                     <label for="start_date">Start Date</label>
                     <input type="date" class="form-control form-control-md" id="start_date" onclick="this.showPicker();"
                         name="date" max="" value="{{ old('date') }}" style="width: 100%;">
+                    @error('date')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="form-group col-md-3 col-sm-6">
@@ -15,11 +18,15 @@
                     <input type="date" class="form-control form-control-md" id="end_date"
                         onclick="this.showPicker();" name="date" max="" value="{{ old('date') }}"
                         style="width: 100%;">
+                    @error('date')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="form-group col-md-3 col-sm-6">
                     <label>Clients</label>
-                    <select class="form-control form-control-md select2" name="client_id" style="width: 100%;" id="clients">
+                    <select class="form-control form-control-md select2" name="client_id" style="width: 100%;"
+                        id="clients">
                         <option disabled selected>Select Client</option>
                         @foreach ($clients as $client)
                             <option value="{{ $client->id }}" {{ old('client_id') == $client->id ? 'selected' : '' }}>
@@ -28,7 +35,7 @@
                         @endforeach
                     </select>
                 </div>
-                
+
                 <div class="form-group col-md-3 col-sm-6 d-flex" style="margin-top: 31px;">
                     <button type="submit" class="btn btn-primary btn-md w-auto w-sm-100">Submit</button>
                 </div>
@@ -167,11 +174,11 @@
 
 <script>
     $('#clients').select2({
-       placeholder: "Select Client",
-       allowClear: false
-       width: '100%'
-       theme: "bootstrap4"
-   });
+        placeholder: "Select Client",
+        allowClear: false,
+        width: '100%',
+        theme: "bootstrap4"
+    });
 </script>
 
 @include('layouts.footer')

@@ -68,6 +68,8 @@ Route::middleware(['admin'])->group(function () {
     Route::get('/get-price', [AdminController::class, 'fetch_price'])->name('fetch.price');
 
     Route::get('/payment_receive', [AdminController::class, 'receive_payment'])->name('receive.payment');
+    Route::get('/get-client-total-amount', [AdminController::class, 'getClientTotalAmount'])->name('getClientTotalAmount');
+
     Route::post('/payment/store', [AdminController::class, 'payment_store'])->name('payment.store');
     Route::get('/expense', [AdminController::class, 'expense'])->name('expense');
 

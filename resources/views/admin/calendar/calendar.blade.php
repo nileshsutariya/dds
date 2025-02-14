@@ -319,9 +319,9 @@
 <script>
      $('#clientSelect').select2({
         placeholder: "Select Client",
-        allowClear: false
-        width: '100%'
-        theme: "bootstrap4"
+        allowClear: false,
+        width: '100%',
+        theme: "bootstrap4",
     });
 </script>
 

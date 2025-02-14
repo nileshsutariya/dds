@@ -382,13 +382,12 @@ class AdminController extends Controller
         $pendingAmount = $totalDue - $totalAmount;
 
         $advancePayment = $pendingAmount < 0 ? abs($pendingAmount) : 0;
-        
+
         return response()->json([
             'total_amount' => $totalAmount,
             'pending_amount' => max($pendingAmount, 0),
             'advance_payment' => $advancePayment
         ]);
-
     }
 
     public function expense()
@@ -422,5 +421,28 @@ class AdminController extends Controller
 
         $payments = $query->get();
         return response()->json(['payments' => $payments]);
+    }
+
+    public function getClientTotalAmount(Request $request)
+    {
+        $clientId = $request->client_id;
+
+        // $totalAmount = DB::table('transactions')
+        //     ->where('client_id', $clientId)
+        //     ->sum('price');
+
+        $totalAmount = Payment::where('client_id', $request->client_id)->sum('amount');
+        $totalDue = Transaction::where('client_id', $request->client_id)->sum('price');
+        $pendingAmount = $totalDue - $totalAmount;
+
+        $advance_payment = max(0, $totalAmount - $totalDue);
+
+        return response()->json([
+            'success' => true,
+            'total_amount' => $totalAmount,
+            'pending_amount' => max($pendingAmount, 0),
+            'total_due' => $totalDue,
+             'advance_payment' => $advance_payment,
+        ]);
     }
 }

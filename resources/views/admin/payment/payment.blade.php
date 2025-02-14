@@ -19,20 +19,20 @@
                             @enderror
                         </div>
                         <div class="form-group">
-                            <label>Clients</label>
-                            <select class="form-control" name="client_id">
+                            <label>Clients<span id="totalAmount" style="font-weight: bold; color: red;"></span></label>
+                            <select class="form-control select2" name="client_id" id="clients">
                                 <option disabled selected>Select Client</option>
                                 @foreach ($clients as $client)
-                                    <option value="{{ $client->id }}"
-                                        {{ old('client_id') == $client->id ? 'selected' : '' }}>
+                                    <option value="{{ $client->id }}" data-total="{{ $client->total_amount ?? 0 }}">
+                                        {{ old('client_id') == $client->id ? 'selected' : '' }}
                                         {{ $client->name }}
                                     </option>
                                 @endforeach
                             </select>
+
                             @error('client_id')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
-
                         </div>
                         <div class="form-group">
                             <label for="amount">Amount</label>
@@ -72,6 +72,48 @@
 
 <script>
     $(document).ready(function() {
+        $("#clients").on("change", function() {
+            var clientId = $(this).val();
+
+            if (clientId) {
+                $.ajax({
+                    url: "{{ route('getClientTotalAmount') }}",
+                    type: "GET",
+                    data: {
+                        client_id: clientId
+                    },
+                    success: function(response) {
+                        console.log("Response:", response);
+
+                        if (response.success) {
+                            let totalPaid = response.total_amount;
+                            let totalDue = response.total_due;
+                            let pendingAmount = response.pending_amount;
+                            let advancePayment = response.advance_payment || 0;
+
+                            if (pendingAmount > 0) {
+                                $("#totalAmount").html(` (Pending: ${pendingAmount})`).css(
+                                    "color", "red");
+                            } else if (advancePayment > 0) {
+                                $("#totalAmount").html(` (Advance: ${advancePayment})`).css(
+                                    "color", "green");
+                            } else {
+                                $("#totalAmount").text(" (No Due)").css("color", "black");
+                            }
+                        } else {
+                            $("#totalAmount").text(" (No Data)").css("color", "black");
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error("Error fetching total amount:", xhr);
+                        $("#totalAmount").text(" (Error fetching amount)");
+                    }
+                });
+            } else {
+                $("#totalAmount").text("");
+            }
+        });
+
         $("form").on("submit", function(event) {
             event.preventDefault();
 
@@ -105,9 +147,11 @@
                     // }
 
                     $("form")[0].reset();
+                    $("#totalAmount").text("");
                 },
 
                 error: function(xhr) {
+                    console.log(xhr.responseJSON);
                     if (xhr.status === 422) {
                         var errors = xhr.responseJSON.errors;
                         $.each(errors, function(key, value) {
@@ -134,4 +178,21 @@
     });
 </script>
 
+<script>
+    $('#clients').select2({
+        placeholder: "Select client",
+        allowClear: false,
+        width: '100%',
+        theme: "bootstrap4",
+    });
+</script>
+
 @include('layouts.footer')
+
+<style>
+    .select2-container .select2-selection--single {
+        height: 38px !important;
+        font-size: 16px;
+        border: 2px solid #ebe8e8 !important;
+    }
+</style>
