@@ -25,7 +25,7 @@
                                 @foreach ($clients as $client)
                                     <option value="{{ $client->id }}" data-total="{{ $client->total_amount ?? 0 }}">
                                         {{ old('client_id') == $client->id ? 'selected' : '' }}
-                                        {{ $client->name }}
+                                        {{ $client->name }}-{{$client->phone_no}}-{{$client->address}}
                                     </option>
                                 @endforeach
                             </select>

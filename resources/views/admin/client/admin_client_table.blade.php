@@ -3,7 +3,7 @@
 <section class="content-header">
     <div class="container-fluid">
         <div class="row mt-1">
-            <div class="col-12 col-md-7 text-center text-md-left ">
+            <div class="col-12 col-md-7 text-center text-md-left">
                 <h1>Client</h1>
             </div>
 
@@ -15,6 +15,7 @@
                     </div>
                 </div>
                 
+
                 <div class="mt-2 mt-md-0">
                     <a href="{{ route('admin_client.create') }}" class="btn btn-primary btn-md"
                         style="white-space: nowrap;">Add Client</a>
@@ -174,11 +175,3 @@
 
 @include('layouts.footer')
 
-<style>
-    @media (max-width: 768px) {
-        #search-bar {
-            width: 350px;
-            margin-top: 10px;
-        }
-    }
-</style>

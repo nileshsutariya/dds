@@ -30,14 +30,14 @@
                         <option disabled selected>Select Client</option>
                         @foreach ($clients as $client)
                             <option value="{{ $client->id }}" {{ old('client_id') == $client->id ? 'selected' : '' }}>
-                                {{ $client->name }}
+                                {{ $client->name }}-{{$client->phone_no}}-{{$client->address}}
                             </option>
                         @endforeach
                     </select>
                 </div>
-
                 <div class="form-group col-md-3 col-sm-6 d-flex" style="margin-top: 31px;">
-                    <button type="submit" class="btn btn-primary btn-md w-auto w-sm-100">Submit</button>
+                    <button type="submit" class="btn btn-primary btn-md w-auto d-none d-sm-block">Submit</button>
+                    <button type="submit" class="btn btn-primary btn-md w-100 d-block d-sm-none">Submit</button>
                 </div>
             </div>
         </div>
@@ -45,13 +45,14 @@
 
     <div class="d-flex justify-content-center">
         <div class="form-group" style="display: flex; justify-content: center; width: 100%;">
-            <div class="col-md-2 col-sm-6">
+            <div class="col-md-2 col-sm-6 col-8">
                 <label for="balance" class="ml-2">Available Balance</label>
                 <input type="text" class="form-control form-control-md text-center" id="balance" name="balance"
-                    style="width: 150px; font-size: 25px" value="{{ number_format($balance) }}" readonly>
+                    style="font-size: 25px" value="{{ number_format($balance) }}" readonly>
             </div>
         </div>
     </div>
+    
     <section class="content mt-2">
         <div class="container-fluid">
             <div class="row">
@@ -156,7 +157,7 @@
                             <td>${i}</td>
                             <td>${payment.client ? payment.client.name : '-'}</td>
                             <td>${payment.date}</td>
-                            <td style="color: ${payment.type == 'c' ? 'red' : 'green'};">${payment.amount}</td>
+                            <td style="color: ${payment.type == 'c' ? 'green' : 'red'};">${payment.amount}</td>
                         </tr>
                     `;
                     $('#payment_data').append(paymentRow);

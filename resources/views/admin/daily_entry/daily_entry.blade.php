@@ -25,7 +25,8 @@
                                             Select Date
                                         </label>
                                         <input type="date" id="transaction_date" class="form-control form-control-lg"
-                                            name="transaction_date" max="" onclick="this.showPicker();" style="height: 40px">
+                                            name="transaction_date" max="" onclick="this.showPicker();"
+                                            style="height: 40px">
                                     </div>
                                 </div>
 
@@ -35,7 +36,15 @@
                                         <button class="btn btn-primary btn-md btn-update mr-2">Update</button>
                                         <button class="btn btn-danger btn-md btn-delete">Delete</button>
                                     </div>
+                                    <div class="d-flex justify-content-end mt-2">
+                                        <span id="total_litter" class="text-success"
+                                            style="font-size: 18px; font-weight: bold;">
+                                            {{-- Total Litter: --}}
+                                        </span>
+                                    </div>
                                 </div>
+
+
                                 <div class="table-responsive">
                                     <table class="table table-bordered" style="table-layout: auto; width: 100%">
                                         <div class="m-4">
@@ -57,6 +66,7 @@
 <script>
     $(document).ready(function() {
         $('.btn').hide();
+        $('#total_litter').hide();
 
         $('#client-data').on('input', '.daily-unit', function() {
             var unit = $(this).val();
@@ -97,6 +107,7 @@
                 success: function(response) {
                     var tbody = $('#client-data');
                     tbody.empty();
+                    var totallitter = 0;
 
                     if (response.length > 0) {
                         tbody.append(`
@@ -113,6 +124,7 @@
                     `);
 
                         response.forEach(function(transaction) {
+                            totallitter += parseFloat(transaction.daily_units);
                             tbody.append(`
                             <tr>
                                <td style="width: 5px">
@@ -137,7 +149,10 @@
                         `);
                         });
 
-                        $('.btn').hide();
+                        // $('.btn-save').hide();
+                        $('#total_litter').text(`Total Litter: ${totallitter.toFixed(2)}`)
+                            .show();
+                        $('.btn-save').hide();
                         $('.btn-update, .btn-delete').show();
                     } else {
                         $.ajax({
@@ -172,6 +187,7 @@
                                     });
 
                                     $('.btn').hide();
+                                    $('#total_litter').hide();
                                     $('.btn-save').show();
                                 } else {
                                     tbody.append(
@@ -330,12 +346,12 @@
     //mobile view card for transaction and client data 
 
     $(document).ready(function() {
-    function renderClientCards(data) {
-        var clientCardsContainer = $('#client-cards');
-        clientCardsContainer.empty();
+        function renderClientCards(data) {
+            var clientCardsContainer = $('#client-cards');
+            clientCardsContainer.empty();
 
-        data.forEach(function(client) {
-            var card = `
+            data.forEach(function(client) {
+                var card = `
             <div class="client-card">
                 <h4>${client.full_name}</h4>
                 <p><strong>Phone:</strong> ${client.phone_no}</p>
@@ -350,16 +366,16 @@
                 <input type="hidden" class="client-id" value="${client.id}">
             </div>
             `;
-            clientCardsContainer.append(card);
-        });
-    }
+                clientCardsContainer.append(card);
+            });
+        }
 
-    function renderTransactionCards(data) {
-        var clientCardsContainer = $('#client-cards');
-        clientCardsContainer.empty();
+        function renderTransactionCards(data) {
+            var clientCardsContainer = $('#client-cards');
+            clientCardsContainer.empty();
 
-        data.forEach(function(transaction) {
-            var card = `
+            data.forEach(function(transaction) {
+                var card = `
             <div class="client-card">
               <div class="col-md-6">
                 <div class="d-flex justify-content-between">
@@ -382,127 +398,130 @@
               <input type="hidden" class="transaction-id" value="${transaction.id}">
             </div> 
         `;
-            clientCardsContainer.append(card);
-            $('.btn-delete').hide();
-            $('.mobile-view').show();
-        });
-    }
+                clientCardsContainer.append(card);
+                $('.btn-delete').hide();
+                $('.mobile-view').show();
+            });
+        }
 
-    $('#transaction_date').on('change', function() {
-        var date = $(this).val();
+        $('#transaction_date').on('change', function() {
+            var date = $(this).val();
 
-        $.ajax({
-            url: '{{ route('fetch.transactions') }}',
-            method: 'GET',
-            data: {
-                date: date
-            },
-            success: function(transactions) {
-                if (transactions.length > 0) {
-                    if ($(window).width() <= 768) {
-                        renderTransactionCards(transactions);
-                    }
-                } else {
-                    $.ajax({
-                        url: '{{ route('fetch.active.clients') }}',
-                        method: 'GET',
-                        success: function(activeClients) {
-                            if ($(window).width() <= 768) {
-                                renderClientCards(activeClients);
-                            }
-                        },
-                        error: function() {
-                            console.log('Error fetching active clients data.');
+            $.ajax({
+                url: '{{ route('fetch.transactions') }}',
+                method: 'GET',
+                data: {
+                    date: date
+                },
+                success: function(transactions) {
+                    if (transactions.length > 0) {
+                        if ($(window).width() <= 768) {
+                            renderTransactionCards(transactions);
                         }
-                    });
-                }
-            },
-            error: function() {
-                console.log('Error fetching transactions data.');
-            }
-        });
-    });
-
-    // Delete in mobile view
-    $(document).on('click', '.mobile-view', function() {
-        var card = $(this).closest('.client-card');
-        var id = card.find('.transaction-id').val();
-        $.ajax({
-            url: '{{ route('delete.unit') }}',
-            method: 'POST',
-            data: {
-                _token: '{{ csrf_token() }}',
-                transaction_ids: [id]
-            },
-            success: function(response) {
-                console.log('Server Response:', response);
-                if (response.success) {
-                    card.remove();
-                    console.log('Card deleted successfully');
-                } else {
-                    console.log('Error deleting the card: ' + response.message);
-                    alert('Error deleting the card. Please try again.');
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('An error occurred while deleting the card.');
-                alert('An error occurred while deleting the card. Please check your connection or try again later.');
-            }
-        });
-    });
-
-    // Update in mobile view
-    $('.btn-update').click(function() {
-        var updatedData = [];
-        $('.client-card').each(function() {
-            var card = $(this).closest('.client-card');
-            var transactionId = card.find('.transaction-id').val();
-            var dailyUnits = card.find('.daily-unit').val();
-            var price = card.find('.price').val();
-
-            if (transactionId && dailyUnits && price) {
-                updatedData.push({
-                    id: transactionId,
-                    unit: dailyUnits,
-                    amount: price
-                });
-            }
-        });
-
-        console.log('Updated Data:', updatedData);
-
-        $.ajax({
-            url: '{{ route('update.unit') }}',
-            method: 'POST',
-            data: {
-                _token: '{{ csrf_token() }}',
-                transactions: updatedData
-            },
-            success: function(response) {
-                if (response.success) {
-                    console.log('Transactions updated successfully!');
-                    updatedData.forEach(function(updatedTransaction) {
-                        var card = $('.client-card').filter(function() {
-                            return $(this).find('.transaction-id').val() == updatedTransaction.id;
+                    } else {
+                        $.ajax({
+                            url: '{{ route('fetch.active.clients') }}',
+                            method: 'GET',
+                            success: function(activeClients) {
+                                if ($(window).width() <= 768) {
+                                    renderClientCards(activeClients);
+                                }
+                            },
+                            error: function() {
+                                console.log(
+                                    'Error fetching active clients data.');
+                            }
                         });
-
-                        card.find('.daily-unit').val(updatedTransaction.unit);
-                        card.find('.price').val(updatedTransaction.amount);
-                    });
-                } else {
-                    console.log('Error updating transactions:', response.message);
-                    alert('Error updating transactions: ' + response.message);
+                    }
+                },
+                error: function() {
+                    console.log('Error fetching transactions data.');
                 }
-            },
-            error: function(xhr, status, error) {
-                console.log('An error occurred while updating transactions.');
-                alert('An error occurred while updating: ' + error);
-            }
+            });
         });
+
+        // Delete in mobile view
+        $(document).on('click', '.mobile-view', function() {
+            var card = $(this).closest('.client-card');
+            var id = card.find('.transaction-id').val();
+            $.ajax({
+                url: '{{ route('delete.unit') }}',
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    transaction_ids: [id]
+                },
+                success: function(response) {
+                    console.log('Server Response:', response);
+                    if (response.success) {
+                        card.remove();
+                        console.log('Card deleted successfully');
+                    } else {
+                        console.log('Error deleting the card: ' + response.message);
+                        alert('Error deleting the card. Please try again.');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('An error occurred while deleting the card.');
+                    alert(
+                        'An error occurred while deleting the card. Please check your connection or try again later.'
+                        );
+                }
+            });
+        });
+
+        // Update in mobile view
+        $('.btn-update').click(function() {
+            var updatedData = [];
+            $('.client-card').each(function() {
+                var card = $(this).closest('.client-card');
+                var transactionId = card.find('.transaction-id').val();
+                var dailyUnits = card.find('.daily-unit').val();
+                var price = card.find('.price').val();
+
+                if (transactionId && dailyUnits && price) {
+                    updatedData.push({
+                        id: transactionId,
+                        unit: dailyUnits,
+                        amount: price
+                    });
+                }
+            });
+
+            console.log('Updated Data:', updatedData);
+
+            $.ajax({
+                url: '{{ route('update.unit') }}',
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    transactions: updatedData
+                },
+                success: function(response) {
+                    if (response.success) {
+                        console.log('Transactions updated successfully!');
+                        updatedData.forEach(function(updatedTransaction) {
+                            var card = $('.client-card').filter(function() {
+                                return $(this).find('.transaction-id')
+                                    .val() == updatedTransaction.id;
+                            });
+
+                            card.find('.daily-unit').val(updatedTransaction.unit);
+                            card.find('.price').val(updatedTransaction.amount);
+                        });
+                    } else {
+                        console.log('Error updating transactions:', response.message);
+                        alert('Error updating transactions: ' + response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log('An error occurred while updating transactions.');
+                    alert('An error occurred while updating: ' + error);
+                }
+            });
+        });
+
     });
-
-});
-
 </script>
 
 <script>

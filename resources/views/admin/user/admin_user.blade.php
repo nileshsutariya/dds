@@ -118,4 +118,9 @@
     #status {
         transform: scale(1.5);
     }
+
+    .select2-container--default .select2-selection--multiple {
+        height: 38px !important;
+        border: 2px solid #ebe8e8 !important;
+    }
 </style>

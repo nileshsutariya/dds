@@ -24,7 +24,10 @@
                                         <option disabled selected>Select Client</option>
                                         @foreach ($clients as $client)
                                             @if ($client->status == 1)
-                                                <option value="{{ $client->id }}">{{ $client->name }}</option>
+                                                <option value="{{ $client->id }}">
+                                                    {{ $client->name }} - {{ $client->phone_no }} -
+                                                    {{ $client->address }}
+                                                </option>
                                             @endif
                                         @endforeach
                                     </select>
@@ -164,8 +167,9 @@
                             totalLitter += parseFloat(event.unit) || 0;
                             totalAmount += parseFloat(event.price) || 0;
                             return {
-                                title: (event.unit ? 'Litter: ' + event.unit : '') +
-                                    (event.price ? '\nAmount: ' + event.price : ''),
+                                title: 'Litter: ' + (event.unit || 0) +
+                                    (event.price ? '\nAmount: ' + event.price :
+                                        '\nAmount: ' + (event.price || 0)),
                                 start: event.date,
                                 allDay: true,
                                 litter: event.unit || 0,
@@ -313,11 +317,10 @@
 
         $('#clientSelect').trigger('change');
     });
-   
 </script>
 
 <script>
-     $('#clientSelect').select2({
+    $('#clientSelect').select2({
         placeholder: "Select Client",
         allowClear: false,
         width: '100%',
@@ -335,7 +338,6 @@
         font-size: 16px;
         border: 2px solid #d6d6d6 !important;
     }
-
 </style>
 
 @include('layouts.footer')
