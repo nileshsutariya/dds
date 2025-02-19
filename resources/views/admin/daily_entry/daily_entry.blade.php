@@ -68,28 +68,30 @@
         $('.btn').hide();
         $('#total_litter').hide();
 
-        $('#client-data').on('input', '.daily-unit', function() {
+        $(document).on('input keyup change', '.daily-unit', function() {
             var unit = $(this).val();
-            console.log(unit);
-            var row = $(this).closest('tr');
-            console.log(row);
+            console.log("Updated unit:", unit);
+
+            var container = $(this).closest('.client-card, tr');
 
             $.ajax({
                 url: '{{ route('fetch.price') }}',
                 method: 'GET',
                 success: function(response) {
                     var price = response.price;
-                    row.find('.price').val(price);
+                    console.log("Fetched price:", price);
 
                     if (unit && price) {
-                        console.log(price);
                         var amount = unit * price;
-                        row.find('.price').val(amount);
+                        container.find('.price').val(amount);
                     }
                 },
-
+                error: function(xhr, status, error) {
+                    console.error('Error fetching price:', error);
+                }
             });
         });
+
         $('#transaction_date').on('change', function() {
             var date = $(this).val();
 
@@ -233,6 +235,19 @@
             }
         });
 
+        $('.client-card').each(function() {
+            var clientId = $(this).find('.client-id').val();
+            var dailyUnits = $(this).find('.daily-unit').val();
+
+            if (clientId && dailyUnits) {
+                transactionData.push({
+                    client_id: clientId,
+                    unit: dailyUnits,
+                    date: selectedDate,
+                });
+            }
+        });
+
         console.log('Transactions Data:', transactionData);
 
         $.ajax({
@@ -281,19 +296,26 @@
                 transactions: updatedData
             },
             success: function(response) {
+                console.log('AJAX Success Response:', response);
+
                 if (response.success) {
-                    console.log('Transactions updated successfully!');
+                    console.log(response.message);
                 } else {
-                    console.log('Error updating transactions:', response.message);
+                    console.log('Error: ' + response.message);
                 }
             },
             error: function(xhr, status, error) {
-                console.log('An error occurred while updating transactions.');
+                console.log('XHR Response:', xhr.responseText);
                 console.log('Status:', status);
                 console.log('Error:', error);
-                alert('An error occurred: ' + error);
+
+                var errorMessage = xhr.responseJSON && xhr.responseJSON.message ?
+                    xhr.responseJSON.message :
+                    'An unknown error occurred.';
+                alert('Error: ' + errorMessage);
             }
         });
+
     });
 
     //delete selected transaction data
@@ -386,15 +408,22 @@
               <p><strong>Phone:</strong> ${transaction.phone_no}</p>
               <p><strong>Address:</strong> ${transaction.address}</p>
               <p><strong>Area:</strong> ${transaction.area}</p>
-             <div style="display: flex; gap: 10px; align-items: center;">
-              <p><strong>Units:</strong></p>
-              <input type="text" value="${transaction.daily_units}" 
-                  class="form-control text-center daily-unit" style="width: 100px">
-              
-              <p><strong>Amount:</strong></p>
-              <input type="text" value="${transaction.price}" 
-                  class="form-control text-center price" style="width: 100px">
-          </div>
+             <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; width: 100%;">
+    <div style="display: flex; align-items: center; gap: 5px;">
+        <p><strong>Units:</strong></p>
+        <input type="text" value="${transaction.daily_units}" 
+            class="form-control text-center daily-unit" 
+            style="width: 80px; min-width: 50px;">
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 5px;">
+        <p><strong>Amount:</strong></p>
+        <input type="text" value="${transaction.price}" 
+            class="form-control text-center price" 
+            style="width: 80px; min-width: 50px;">
+    </div>
+</div>
+
               <input type="hidden" class="transaction-id" value="${transaction.id}">
             </div> 
       `;
@@ -511,12 +540,12 @@
                         });
                     } else {
                         console.log('Error updating transactions:', response.message);
-                        alert('Error updating transactions: ' + response.message);
+                        // alert('Error updating transactions: ' + response.message);
                     }
                 },
                 error: function(xhr, status, error) {
                     console.log('An error occurred while updating transactions.');
-                    alert('An error occurred while updating: ' + error);
+                    // alert('An error occurred while updating: ' + error);
                 }
             });
         });
@@ -613,6 +642,6 @@
         border-radius: 10px;
         padding: 15px;
         box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-        width: 90%;
+        width: 100%;
     }
 </style>

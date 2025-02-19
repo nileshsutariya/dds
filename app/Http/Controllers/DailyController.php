@@ -97,23 +97,28 @@ class DailyController extends Controller
     {
         $transactions = $request->input('transactions');
         $price = Setting::where('key', 'price')->value('value');
-
+    
         foreach ($transactions as $transaction) {
             $transactionRecord = Transaction::find($transaction['id']);
-
+    
             if ($transactionRecord) {
                 $transactionRecord->unit = $transaction['unit'];
                 $transactionRecord->price = $transaction['unit'] * $price;
                 $transactionRecord->save();
             } else {
-                return response()->json(['success' => false, 'message' => 'Transaction not found for ID ' . $transaction['id']]);
+                return response()->json([
+                    'success' => false, 
+                    'message' => 'Transaction not found for ID ' . $transaction['id']
+                ], 400);
             }
         }
-
-        return response()->json(['success' => true]);
+    
+        return response()->json([
+            'success' => true, 
+            'message' => 'Transactions updated successfully!'
+        ], 200);
     }
-
-
+    
     public function deleteDailyunit(Request $request)
     {
         $transactionIds = $request->input('transaction_ids');
