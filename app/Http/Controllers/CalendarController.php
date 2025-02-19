@@ -130,7 +130,7 @@ class CalendarController extends Controller
             }
 
             $clientData[] = [
-                'name' => $client->name,
+                'name' => $client->name .'-'.$client->phone_no,
                 'transactions' => $transactionData,
                 'amounts' => $amountData,
                 'total_units' => $totalUnits,
