@@ -376,7 +376,7 @@
 
             data.forEach(function(transaction) {
                 var card = `
-            <div class="client-card">
+            <div class="client-card update-card">
               <div class="col-md-6">
                 <div class="d-flex justify-content-between">
                   <h4>${transaction.full_name}</h4>
@@ -397,7 +397,7 @@
           </div>
               <input type="hidden" class="transaction-id" value="${transaction.id}">
             </div> 
-        `;
+      `;
                 clientCardsContainer.append(card);
                 $('.btn-delete').hide();
                 $('.mobile-view').show();
@@ -465,7 +465,7 @@
                     console.error('An error occurred while deleting the card.');
                     alert(
                         'An error occurred while deleting the card. Please check your connection or try again later.'
-                        );
+                    );
                 }
             });
         });
@@ -606,5 +606,13 @@
         .client-cards {
             display: none;
         }
+    }
+
+    .update-card {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+        width: 90%;
     }
 </style>
